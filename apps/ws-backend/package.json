@@ -10,7 +10,11 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@repo/typescript-config": "workspace:*"
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/ws": "^8.18.1"
   },
   "keywords": [],
   "author": "",
