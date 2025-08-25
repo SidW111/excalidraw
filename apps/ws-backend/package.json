@@ -17,10 +17,11 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/ws": "^8.18.1",
-    "@repo/backend-common":"workspace:*"
+    "@repo/backend-common": "workspace:*",
+    "@repo/common": "workspace:*"
   },
   "keywords": [],
-  "author": "",
+  "authorss": "",
   "license": "ISC",
   "type": "commonjs"
 }
