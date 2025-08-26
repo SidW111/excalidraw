@@ -12,16 +12,15 @@ import { prismaClient } from "@repo/db/client";
 const app = express();
 
 app.post("/signup", async (req, res) => {
+  const parsedData = CreateUserSchema.safeParse(req.body);
+
+  if (!parsedData.success) {
+    res.json({
+      message: "incorrect input",
+    });
+    return;
+  }
   try {
-    const parsedData = CreateUserSchema.safeParse(req.body);
-
-    if (!parsedData.success) {
-      res.json({
-        message: "incorrect input",
-      });
-      return;
-    }
-
     const result = await prismaClient.user.create({
       data: {
         email: parsedData.data.username,
@@ -31,7 +30,7 @@ app.post("/signup", async (req, res) => {
     });
 
     if (result) {
-      res.json({ message: "User created successfully" });
+      res.json({ userId: result.id, message: "User created successfully" });
     }
   } catch (error) {
     res.status(404).json({
@@ -41,13 +40,22 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/signin", async (req, res) => {
-  const data = SignInSchema.safeParse(req.body);
-  if (!data.success) {
+  const parsedData = SignInSchema.safeParse(req.body);
+  if (!parsedData.success) {
     res.json({
       message: "incorrect input",
     });
     return;
   }
+
+  try {
+    const result = await prismaClient.user.findFirst({
+      // data:{
+      //   username:parsedData.data.username,
+      //   password:parsedData.data.password
+      // }
+    });
+  } catch (error) {}
   const userId = 1;
   const token = jwt.sign({ userId }, JWT_SECRET);
 });
