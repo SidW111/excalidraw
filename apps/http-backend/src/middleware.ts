@@ -16,10 +16,12 @@ export function userMiddleware(
     const decodedToken = jwt.verify(token, JWT_SECRET);
     if (decodedToken) {
       //@ts-ignore
-      decodedToken.userId = req.userId;
+      req.userId = decodedToken.userId;
+      console.log(decodedToken);
       next();
     }
   } catch (error) {
+    console.log(error, "error from userMiddleware");
     res.json({ message: "User is unauthorized" });
   }
 }
