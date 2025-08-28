@@ -131,7 +131,7 @@ app.get("/chats/:roomId", async (req, res) => {
   try {
     const messages = await prismaClient.chat.findMany({
       where: {
-        id: roomId,
+         roomId,
       },
       orderBy: {
         id: "desc",
