@@ -125,6 +125,28 @@ app.post("/room", userMiddleware, async (req, res) => {
   }
 });
 
+app.get("/chats/:roomId", async (req, res) => {
+  const roomId = Number(req.params.roomId);
+
+  try {
+    const messages = await prismaClient.chat.findMany({
+      where: {
+        id: roomId,
+      },
+      orderBy: {
+        id: "desc",
+      },
+      take: 50,
+    });
+
+    return res.json({
+      messages,
+    });
+  } catch (error) {
+    console.log(error, "error from get chats");
+  }
+});
+
 app.listen(3001, () => {
   console.log({ msg: "connected http" });
 });
