@@ -1,7 +1,6 @@
-import AuthPage from "@/components/AuthPage";
+import { AuthPage } from "@/components/AuthPage";
 
-
-export default function Signup(){
+export default async function Signup(){
     return <div>
         <AuthPage IsSignIn={false} />
     </div>
