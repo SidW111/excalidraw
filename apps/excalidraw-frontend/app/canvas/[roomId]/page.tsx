@@ -31,7 +31,7 @@ export default function Canvas() {
         if (clicked) {
           const width = e.clientX - startX;
           const height = e.clientY - startY;
-        //   ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.strokeRect(startX, startY, width, height);
         }
       });
