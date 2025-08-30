@@ -4,9 +4,9 @@ import { IconButton } from "./IconButton";
 import { Circle, MousePointer, Pencil, Square } from "lucide-react";
 import { ReactNode } from "react";
 
-enum Shapes {
+export enum Tools {
   circle = "circle",
-  rectangle = "rectangle",
+  rectangle = "rect",
   pencil = "pencil",
   cursor = "cursor",
 }
@@ -19,7 +19,12 @@ export default function Canvas({
   socket: WebSocket;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [selectedTool, setSelectedTool] = useState<Shapes>(Shapes.cursor);
+  const [selectedTool, setSelectedTool] = useState<Tools>(Tools.cursor);
+
+  useEffect(() => {
+    //@ts-ignore
+    window.selectedTool = selectedTool;
+  }, [selectedTool]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -32,7 +37,7 @@ export default function Canvas({
     <div
       className=""
       style={{
-        height:'100vh',
+        height: "100vh",
         overflow: "hidden",
       }}
     >
@@ -52,36 +57,36 @@ function TopBar({
   selectedTool,
   setSelectedTool,
 }: {
-  selectedTool: Shapes;
-  setSelectedTool: (s: Shapes) => void;
+  selectedTool: Tools;
+  setSelectedTool: (s: Tools) => void;
 }) {
   return (
     <div className="fixed  top-5 left-162 flex  items-center justify-center gap-2  text-white bg-gray-900 rounded-3xl p-2 ">
       <IconButton
-        activated={selectedTool === Shapes.circle}
+        activated={selectedTool === Tools.circle}
         onClick={() => {
-          setSelectedTool(Shapes.circle);
+          setSelectedTool(Tools.circle);
         }}
         icon={<Circle />}
       />
       <IconButton
-        activated={selectedTool === Shapes.rectangle}
+        activated={selectedTool === Tools.rectangle}
         onClick={() => {
-          setSelectedTool(Shapes.rectangle);
+          setSelectedTool(Tools.rectangle);
         }}
         icon={<Square />}
       />
       <IconButton
-        activated={selectedTool === Shapes.pencil}
+        activated={selectedTool === Tools.pencil}
         onClick={() => {
-          setSelectedTool(Shapes.pencil);
+          setSelectedTool(Tools.pencil);
         }}
         icon={<Pencil />}
       />
       <IconButton
-        activated={selectedTool === Shapes.cursor}
+        activated={selectedTool === Tools.cursor}
         onClick={() => {
-          setSelectedTool(Shapes.cursor);
+          setSelectedTool(Tools.cursor);
         }}
         icon={<MousePointer />}
       />

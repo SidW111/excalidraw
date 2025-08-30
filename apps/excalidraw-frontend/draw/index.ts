@@ -1,3 +1,4 @@
+import { Tools } from "@/components/Canvas";
 import { BACKEND_URL } from "@/config";
 import axios from "axios";
 
@@ -54,20 +55,39 @@ export async function initDraw(
     clicked = false;
     const width = e.clientX - startX;
     const height = e.clientY - startY;
-    const shape: Shape = {
-      type: "rect",
-      x: startX,
-      y: startY,
-      width,
-      height,
-    };
 
+    let shape: Shape | null = null;
+
+    //@ts-ignore
+    const selectedTool = window.selectedTool;
+
+    if (selectedTool === Tools.rectangle) {
+      shape = {
+        type: "rect",
+        x: startX,
+        y: startY,
+        width,
+        height,
+      };
+    } else if (selectedTool === Tools.circle) {
+      const radius = Math.max(height, width) / 2;
+      shape = {
+        type: "circle",
+        centerX: startX + radius,
+        centerY: startY + radius,
+        radius: Math.abs(radius),
+      };
+    }
+
+    if (!shape) return;
     existingShape.push(shape);
-    socket.send(JSON.stringify({
-      type:"chat",
-      message:JSON.stringify({shape}),
-      roomId
-    }));
+    socket.send(
+      JSON.stringify({
+        type: "chat",
+        message: JSON.stringify({ shape }),
+        roomId,
+      })
+    );
   });
 
   canvas.addEventListener("mousemove", (e) => {
@@ -75,9 +95,21 @@ export async function initDraw(
       const width = e.clientX - startX;
       const height = e.clientY - startY;
       clearCanvas(canvas, ctx, existingShape);
-
       ctx.strokeStyle = "rgba(255,255,255)";
-      ctx.strokeRect(startX, startY, width, height);
+      //@ts-ignore
+      const selectedTools = window.selectedTool;
+      console.log(selectedTools);
+      if (selectedTools === Tools.rectangle) {
+        ctx.strokeRect(startX, startY, width, height);
+      } else if (selectedTools === Tools.circle) {
+        const radius = Math.max(height, width) / 2;
+        const centerX = startX + radius;
+        const centerY = startY + radius;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, Math.abs(radius), 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.closePath();
+      }
     }
   });
 }
@@ -92,9 +124,14 @@ function clearCanvas(
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   existingShape.map((shape) => {
-    if (shape.type === "rect") {
+    if (shape.type === Tools.rectangle) {
       ctx.strokeStyle = "rgba(255,255,255)";
       ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+    } else if (shape.type === Tools.circle) {
+      ctx.beginPath();
+      ctx.arc(shape.centerX, shape.centerY, shape.radius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.closePath();
     }
   });
 }
@@ -102,9 +139,9 @@ function clearCanvas(
 async function getExistingShapes(roomId: string) {
   const res = await axios.get(`${BACKEND_URL}/chats/${roomId}`);
   const messages = res.data.messages;
-  const shapes = messages.map((x:{message:string})=>{
-    const messageData = JSON.parse(x.message)
-    return messageData.shape
-  })
+  const shapes = messages.map((x: { message: string }) => {
+    const messageData = JSON.parse(x.message);
+    return messageData.shape;
+  });
   return shapes;
 }
