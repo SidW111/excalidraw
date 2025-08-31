@@ -2,7 +2,7 @@ import { initDraw } from "@/draw";
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
 import { Circle, MousePointer, Pencil, Square } from "lucide-react";
-import { ReactNode } from "react";
+import { Game } from "@/draw/Game";
 
 export enum Tools {
   circle = "circle",
@@ -19,17 +19,18 @@ export default function Canvas({
   socket: WebSocket;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [game,setGame] = useState<Game>()
   const [selectedTool, setSelectedTool] = useState<Tools>(Tools.cursor);
 
   useEffect(() => {
-    //@ts-ignore
-    window.selectedTool = selectedTool;
-  }, [selectedTool]);
+   game?.setTool(selectedTool)
+  }, [selectedTool,game]);
 
   useEffect(() => {
-    if (canvasRef.current) {
-      const canvas = canvasRef.current;
-      initDraw(canvas, roomId, socket);
+    if (canvasRef.current) {      
+      const g = new Game(canvasRef.current,socket,roomId)
+      setGame(g)
+      
     }
   }, [canvasRef]);
 

@@ -1,3 +1,4 @@
+import { Tools } from "@/components/Canvas";
 import { getExistingShapes } from "./http";
 
 type Shape =
@@ -22,7 +23,7 @@ type Shape =
       endY: number;
     };
 
-export class game {
+export class Game {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private existingShape: Shape[];
@@ -31,7 +32,7 @@ export class game {
   private startX = 0;
   private startY = 0;
   private socket: WebSocket;
-  private selectedTools = "cursor";
+  private selectedTool: Tools = Tools.cursor;
 
   constructor(canvas: HTMLCanvasElement, socket: WebSocket, roomId: string) {
     this.canvas = canvas;
@@ -44,13 +45,14 @@ export class game {
     this.initHandlers();
     this.initMouseHandlers();
   }
-  
-  setTool(){
-    
+
+  setTool(tool: Tools) {
+    this.selectedTool = tool;
   }
 
   async init() {
     this.existingShape = await getExistingShapes(this.roomId);
+    this.clearCanvas();
   }
 
   initHandlers() {
@@ -102,14 +104,30 @@ export class game {
       this.clicked = false;
       const width = e.clientX - this.startX;
       const height = e.clientY - this.startY;
-      const shape: Shape = {
-        type: "rect",
-        x: this.startX,
-        y: this.startY,
-        width,
-        height,
-      };
 
+      let shape: Shape | null = null;
+
+      const selectedTool = this.selectedTool;
+
+      if (selectedTool === Tools.rectangle) {
+        shape = {
+          type: "rect",
+          x: this.startX,
+          y: this.startY,
+          width,
+          height,
+        };
+      } else if (selectedTool === Tools.circle) {
+        const radius = Math.max(height, width) / 2;
+        shape = {
+          type: "circle",
+          centerX: this.startX + radius,
+          centerY: this.startY + radius,
+          radius: Math.abs(radius),
+        };
+      }
+
+      if (!shape) return;
       this.existingShape.push(shape);
       this.socket.send(
         JSON.stringify({
@@ -127,7 +145,18 @@ export class game {
         this.clearCanvas();
 
         this.ctx.strokeStyle = "rgba(255,255,255)";
-        this.ctx.strokeRect(this.startX, this.startY, width, height);
+
+        if (this.selectedTool === Tools.rectangle) {
+          this.ctx.strokeRect(this.startX, this.startY, width, height);
+        } else if (this.selectedTool === Tools.circle) {
+          const radius = Math.max(width, height) / 2;
+          const centerX = this.startX + radius;
+          const centerY = this.startY + radius;
+          this.ctx.beginPath();
+          this.ctx.arc(centerX, centerY, Math.abs(radius), 0, Math.PI * 2);
+          this.ctx.stroke();
+          this.ctx.closePath();
+        }
       }
     });
   }
