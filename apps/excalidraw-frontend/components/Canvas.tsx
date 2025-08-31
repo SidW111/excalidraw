@@ -1,13 +1,14 @@
 import { initDraw } from "@/draw";
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
-import { Circle, MousePointer, Pencil, Square } from "lucide-react";
+import { Circle, MoreHorizontalIcon, MousePointer, MoveHorizontal, Pencil, PenLine, Slash, Square } from "lucide-react";
 import { Game } from "@/draw/Game";
 
 export enum Tools {
   circle = "circle",
   rectangle = "rect",
   pencil = "pencil",
+  line = "line",
   cursor = "cursor",
 }
 
@@ -19,18 +20,21 @@ export default function Canvas({
   socket: WebSocket;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [game,setGame] = useState<Game>()
+  const [game, setGame] = useState<Game>();
   const [selectedTool, setSelectedTool] = useState<Tools>(Tools.cursor);
 
   useEffect(() => {
-   game?.setTool(selectedTool)
-  }, [selectedTool,game]);
+    game?.setTool(selectedTool);
+  }, [selectedTool, game]);
 
   useEffect(() => {
-    if (canvasRef.current) {      
-      const g = new Game(canvasRef.current,socket,roomId)
-      setGame(g)
-      
+    if (canvasRef.current) {
+      const g = new Game(canvasRef.current, socket, roomId);
+      setGame(g);
+
+      return (()=>{
+        g.destroy()
+      })
     }
   }, [canvasRef]);
 
@@ -77,6 +81,13 @@ function TopBar({
         }}
         icon={<Square />}
       />
+        <IconButton 
+        activated={selectedTool === Tools.line}
+        onClick={()=>{
+          setSelectedTool(Tools.line)
+        }}
+        icon={<Slash/>}
+        />
       <IconButton
         activated={selectedTool === Tools.pencil}
         onClick={() => {
