@@ -1,7 +1,16 @@
 import { initDraw } from "@/draw";
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
-import { Circle, MoreHorizontalIcon, MousePointer, MoveHorizontal, Pencil, PenLine, Slash, Square } from "lucide-react";
+import {
+  Circle,
+  MoreHorizontalIcon,
+  MousePointer,
+  MoveHorizontal,
+  Pencil,
+  PenLine,
+  Slash,
+  Square,
+} from "lucide-react";
 import { Game } from "@/draw/Game";
 
 export enum Tools {
@@ -32,9 +41,9 @@ export default function Canvas({
       const g = new Game(canvasRef.current, socket, roomId);
       setGame(g);
 
-      return (()=>{
-        g.destroy()
-      })
+      return () => {
+        g.destroy();
+      };
     }
   }, [canvasRef]);
 
@@ -66,41 +75,41 @@ function TopBar({
   setSelectedTool: (s: Tools) => void;
 }) {
   return (
-    <div className="fixed  top-5 left-162 flex  items-center justify-center gap-2  text-white bg-gray-900 rounded-3xl p-2 ">
+    <div className="fixed top-5 left-162 flex items-center justify-center gap-1.5 text-white bg-gray-900 rounded-xl p-1 ">
       <IconButton
         activated={selectedTool === Tools.circle}
         onClick={() => {
           setSelectedTool(Tools.circle);
         }}
-        icon={<Circle />}
+        icon={<Circle size={18} />}
       />
       <IconButton
         activated={selectedTool === Tools.rectangle}
         onClick={() => {
           setSelectedTool(Tools.rectangle);
         }}
-        icon={<Square />}
+        icon={<Square size={18} />}
       />
-        <IconButton 
+      <IconButton
         activated={selectedTool === Tools.line}
-        onClick={()=>{
-          setSelectedTool(Tools.line)
+        onClick={() => {
+          setSelectedTool(Tools.line);
         }}
-        icon={<Slash/>}
-        />
+        icon={<Slash size={18} />}
+      />
       <IconButton
         activated={selectedTool === Tools.pencil}
         onClick={() => {
           setSelectedTool(Tools.pencil);
         }}
-        icon={<Pencil />}
+        icon={<Pencil size={18} />}
       />
       <IconButton
         activated={selectedTool === Tools.cursor}
         onClick={() => {
           setSelectedTool(Tools.cursor);
         }}
-        icon={<MousePointer />}
+        icon={<MousePointer size={18} />}
       />
     </div>
   );
