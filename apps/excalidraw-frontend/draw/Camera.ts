@@ -18,11 +18,10 @@ export class Camera {
   }
 
   zoom(factor: number, centerX: number, centerY: number) {
-    // Calculate the world coordinates of the mouse before zooming
     const worldX = (centerX - this.offSetX) / this.scale;
-    const worldY = (centerY - this.offSetY) / this.scale; // Update the scale
+    const worldY = (centerY - this.offSetY) / this.scale;
 
-    this.scale *= factor; // Calculate the new offset to keep the world coordinates under the mouse constant
+    this.scale *= factor;
 
     this.offSetX = centerX - worldX * this.scale;
     this.offSetY = centerY - worldY * this.scale;

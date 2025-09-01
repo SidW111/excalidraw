@@ -67,6 +67,8 @@ export default function Canvas({
   );
 }
 
+function Zoom() {}
+
 function TopBar({
   selectedTool,
   setSelectedTool,

@@ -165,13 +165,12 @@ export class Game {
     const canvasX = e.clientX - rect.left;
     const canvasY = e.clientY - rect.top;
     if (e.button === 1 || e.button === 2) {
-      // Middle or right mouse button
       this.isPanning = true;
       this.lastX = canvasX;
       this.lastY = canvasY;
       return;
     }
-    if (e.button !== 0) return; // Only left click for drawing
+    if (e.button !== 0) return;
     this.isDrawing = true;
     const worldPos = this.camera.screenToWorld(canvasX, canvasY);
     this.startX = worldPos.x;
@@ -197,7 +196,7 @@ export class Game {
       const worldPos = this.camera.screenToWorld(canvasX, canvasY);
       this.endX = worldPos.x;
       this.endY = worldPos.y;
-      this.clearCanvas(); // Draw preview of current shape
+      this.clearCanvas(); 
       this.ctx.strokeStyle = "rgba(255,255,255)";
       if (this.selectedTool === Tools.rectangle) {
         const width = this.endX - this.startX;
@@ -307,7 +306,7 @@ export class Game {
     );
   };
 
-  // New Event Handlers for Touch and Context Menu
+  
   contextMenuHandler = (e: MouseEvent) => {
     e.preventDefault();
   };
